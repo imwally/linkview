@@ -87,13 +87,6 @@ func (t *Terminal) Render() {
 		termbox.SetCell(i, 0, character, termbox.ColorDefault, termbox.ColorDefault)
 	}
 
-	if t.Selected >= len(t.Links) {
-		t.Selected = 0
-	}
-	if t.Selected < 0 {
-		t.Selected = len(t.Links) - 1
-	}
-
 	for col, character := range t.Links[t.Selected].URL {
 		termbox.SetCell(col+2, 2, character, termbox.ColorDefault, termbox.ColorDefault)
 	}
@@ -117,6 +110,13 @@ func (t *Terminal) MoveSelection(direction string) {
 		t.Selected--
 	case "down":
 		t.Selected++
+	}
+
+	if t.Selected >= len(t.Links) {
+		t.Selected = 0
+	}
+	if t.Selected < 0 {
+		t.Selected = len(t.Links) - 1
 	}
 }
 
