@@ -35,7 +35,10 @@ func main() {
 
 	for {
 		go PollEvent()
-		quit := terminal.HandleEvent(<-EventChan)
+		quit, err := terminal.HandleEvent(<-EventChan)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "linkview: %s\n", err)
+		}
 
 		if quit {
 			return
