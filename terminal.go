@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os/exec"
 	"runtime"
 
@@ -10,8 +9,9 @@ import (
 )
 
 type Terminal struct {
-	Links    []Link
-	Selected int
+	Links         []Link
+	Selected      int
+	Width, Height int
 }
 
 var (
@@ -20,22 +20,26 @@ var (
 	KeyEnter     = termbox.KeyEnter
 	KeyArrowUp   = termbox.KeyArrowUp
 	KeyArrowDown = termbox.KeyArrowDown
+	KeyCtrlP     = termbox.KeyCtrlP
+	KeyCtrlN     = termbox.KeyCtrlN
+	KeyCtrlO     = termbox.KeyCtrlO
 )
 
+func PollEvent() {
+	EventChan <- termbox.PollEvent()
+}
+
 func NewTerminal(links *[]Link) *Terminal {
+	width, height := termbox.Size()
+
 	term := Terminal{
-		*links,
-		0,
+		Links:    *links,
+		Selected: 0,
+		Width:    width,
+		Height:   height,
 	}
 
 	return &term
-}
-
-func PollEvent() {
-	event := termbox.PollEvent()
-	if event.Type == termbox.EventKey {
-		EventChan <- event
-	}
 }
 
 func (t *Terminal) Start() error {
@@ -51,54 +55,69 @@ func (t *Terminal) Close() {
 	termbox.Close()
 }
 
-func (t *Terminal) HandleEvent(e termbox.Event) bool {
-	if e.Ch == 0 {
-		switch e.Key {
-		case KeyArrowDown:
-			t.MoveSelection("down")
-			t.Render()
-		case KeyArrowUp:
-			t.MoveSelection("up")
-			t.Render()
-		case KeyEnter:
-			t.Select()
-		}
-	} else {
-		switch e.Ch {
-		case 'j':
-			t.MoveSelection("down")
-			t.Render()
-		case 'k':
-			t.MoveSelection("up")
-			t.Render()
-		case 'q':
-			return true
+func (t *Terminal) HandleEvent(e termbox.Event) (bool, error) {
+	if e.Type == termbox.EventResize {
+		t.Width, t.Height = termbox.Size()
+		t.Render()
+	}
+
+	var err error
+	if e.Type == termbox.EventKey {
+		if e.Ch == 0 {
+			switch e.Key {
+			case KeyArrowDown:
+				t.MoveSelection("down")
+				t.Render()
+			case KeyCtrlN:
+				t.MoveSelection("down")
+				t.Render()
+			case KeyArrowUp:
+				t.MoveSelection("up")
+				t.Render()
+			case KeyCtrlP:
+				t.MoveSelection("up")
+				t.Render()
+			case KeyEnter:
+				err = t.Select()
+			case KeyCtrlO:
+				err = t.Select()
+			}
+		} else {
+			switch e.Ch {
+			case 'j':
+				t.MoveSelection("down")
+				t.Render()
+			case 'k':
+				t.MoveSelection("up")
+				t.Render()
+			case 'q':
+				return true, nil
+			}
 		}
 	}
 
-	return false
+	return false, err
+}
+
+func (t *Terminal) Println(x int, y int, s string) {
+	for col, char := range s {
+		termbox.SetCell(col+x, y, char, termbox.ColorDefault, termbox.ColorDefault)
+	}
 }
 
 func (t *Terminal) Render() {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
-	help := "j: move down   k: move up   return: open url   q: quit"
-	for i, character := range help {
-		termbox.SetCell(i, 0, character, termbox.ColorDefault, termbox.ColorDefault)
-	}
-
-	for col, character := range t.Links[t.Selected].URL {
-		termbox.SetCell(col+2, 2, character, termbox.ColorDefault, termbox.ColorDefault)
-	}
+	help := "j/C-n: move down   k/C-p: move up   return/C-o: open url   q: quit"
+	t.Println(0, 0, help)
+	url := t.Links[t.Selected].URL
+	t.Println(0, 2, url)
 
 	for row, link := range t.Links {
 		if row == t.Selected {
-			termbox.SetCell(0, row+4, '→', termbox.ColorDefault, termbox.ColorDefault)
-			termbox.SetCell(1, row+4, ' ', termbox.ColorDefault, termbox.ColorDefault)
+			t.Println(0, 4+row, fmt.Sprintf("-> %s", link.Text))
 		}
-		for col, character := range link.Text {
-			termbox.SetCell(col+2, row+4, character, termbox.ColorDefault, termbox.ColorDefault)
-		}
+		t.Println(3, row+4, link.Text)
 	}
 
 	termbox.Flush()
@@ -113,10 +132,10 @@ func (t *Terminal) MoveSelection(direction string) {
 	}
 
 	if t.Selected >= len(t.Links) {
-		t.Selected = 0
+		t.Selected = len(t.Links) - 1
 	}
 	if t.Selected < 0 {
-		t.Selected = len(t.Links) - 1
+		t.Selected = 0
 	}
 }
 
@@ -132,10 +151,10 @@ func (t *Terminal) Select() error {
 	case "darwin":
 		err = exec.Command("open", url).Start()
 	default:
-		err = fmt.Errorf("unsupported platform")
+		err = fmt.Errorf("can't open browser: unsupported platform")
 	}
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	return nil
