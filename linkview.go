@@ -6,15 +6,26 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "%s\n", "linkview: expected single argument")
-		return
-	}
-
-	file, err := os.Open(os.Args[1])
+	stat, err := os.Stdin.Stat()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "linkview: %s\n", err)
 		return
+	}
+
+	var file *os.File
+	if (stat.Mode() & os.ModeNamedPipe) == 0 {
+		if len(os.Args) < 2 {
+			fmt.Fprintf(os.Stderr, "linkview: %s\n", "expected at least one argument")
+			return
+		}
+		file, err = os.Open(os.Args[1])
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "linkview: %s\n", err)
+			return
+		}
+
+	} else {
+		file = os.Stdin
 	}
 
 	links, err := FindLinks(file)
