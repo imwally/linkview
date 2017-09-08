@@ -30,13 +30,11 @@ func PollEvent() {
 }
 
 func NewTerminal(links *[]Link) *Terminal {
-	width, height := termbox.Size()
-
 	term := Terminal{
 		Links:    *links,
 		Selected: 0,
-		Width:    width,
-		Height:   height,
+		Width:    0,
+		Height:   0,
 	}
 
 	return &term
@@ -57,7 +55,7 @@ func (t *Terminal) Close() {
 
 func (t *Terminal) HandleEvent(e termbox.Event) (bool, error) {
 	if e.Type == termbox.EventResize {
-		t.Width, t.Height = termbox.Size()
+		t.SetSize()
 		t.Render()
 	}
 
@@ -110,17 +108,32 @@ func (t *Terminal) Render() {
 
 	help := "j/C-n: move down   k/C-p: move up   return/C-o: open url   q: quit"
 	t.Println(0, 0, help)
+	t.Println(0, 1, fmt.Sprintf("Selected: %d Offset: %d", t.Selected, t.Selected-t.Height+5))
 	url := t.Links[t.Selected].URL
 	t.Println(0, 2, url)
 
-	for row, link := range t.Links {
-		if row == t.Selected {
-			t.Println(0, 4+row, fmt.Sprintf("-> %s", link.Text))
+	var start int
+	offset := t.Selected - t.Height + 6
+	if t.Selected > t.Height-6 {
+		start = offset
+	}
+
+	links := t.Links
+	for i := start; i < len(links); i++ {
+		if t.Selected > t.Height-6 {
+			t.Println(0, t.Height-2, "->")
+			t.Println(3, i+4-offset, links[i].Text)
+		} else {
+			t.Println(0, t.Selected+4, "->")
+			t.Println(3, i+4, links[i].Text)
 		}
-		t.Println(3, row+4, link.Text)
 	}
 
 	termbox.Flush()
+}
+
+func (t *Terminal) SetSize() {
+	t.Width, t.Height = termbox.Size()
 }
 
 func (t *Terminal) MoveSelection(direction string) {

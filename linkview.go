@@ -42,6 +42,8 @@ func main() {
 	defer terminal.Close()
 
 	terminal.Render()
+	terminal.SetSize()
+	terminal.Render()
 
 	for {
 		go PollEvent()
