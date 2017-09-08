@@ -23,7 +23,6 @@ func main() {
 			fmt.Fprintf(os.Stderr, "linkview: %s\n", err)
 			return
 		}
-
 	} else {
 		file = os.Stdin
 	}

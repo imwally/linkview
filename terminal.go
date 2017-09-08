@@ -134,6 +134,7 @@ func (t *Terminal) MoveSelection(direction string) {
 	if t.Selected >= len(t.Links) {
 		t.Selected = len(t.Links) - 1
 	}
+
 	if t.Selected < 0 {
 		t.Selected = 0
 	}
@@ -153,6 +154,7 @@ func (t *Terminal) Select() error {
 	default:
 		err = fmt.Errorf("can't open browser: unsupported platform")
 	}
+
 	if err != nil {
 		return err
 	}
