@@ -107,9 +107,8 @@ func (t *Terminal) Render() {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
 	help := "j/C-n: move down   k/C-p: move up   return/C-o: open url   q: quit"
-	t.Println(0, 0, help)
-	t.Println(0, 1, fmt.Sprintf("Selected: %d Offset: %d", t.Selected, t.Selected-t.Height+5))
 	url := t.Links[t.Selected].URL
+	t.Println(0, 0, help)
 	t.Println(0, 2, url)
 
 	var start int
