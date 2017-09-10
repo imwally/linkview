@@ -53,6 +53,11 @@ func FindLinks(file io.Reader) ([]Link, error) {
 
 	var links []Link
 	doc.Find("a").Each(func(i int, s *goquery.Selection) {
+		url, ok := s.Attr("href")
+		if !ok {
+			return
+		}
+
 		node := goquery.NodeName(s)
 		text := NormalizeString(s.Text())
 		if text == "" {
@@ -63,10 +68,11 @@ func FindLinks(file io.Reader) ([]Link, error) {
 				}
 			})
 		}
+
 		if text == "" {
 			text = "NO TEXT"
 		}
-		url, _ := s.Attr("href")
+
 		links = append(links, Link{node, text, url})
 	})
 
