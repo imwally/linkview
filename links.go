@@ -37,6 +37,10 @@ func ImageText(s *goquery.Selection) string {
 		return "NO TEXT"
 	}
 
+	if src == "" {
+		return "NO TEXT"
+	}
+
 	imageURL, err := url.Parse(src)
 	if err != nil {
 		log.Fatal(err)
@@ -60,14 +64,14 @@ func FindLinks(file io.Reader) ([]Link, error) {
 
 		node := goquery.NodeName(s)
 		text := NormalizeString(s.Text())
-		if text == "" {
-			s.Children().Each(func(i int, s *goquery.Selection) {
-				node = goquery.NodeName(s)
-				if node == "img" {
-					text = ImageText(s)
-				}
-			})
-		}
+
+		s.Children().Each(func(i int, s *goquery.Selection) {
+			node = goquery.NodeName(s)
+			if node == "img" {
+				text = ImageText(s)
+				return
+			}
+		})
 
 		if text == "" {
 			text = "NO TEXT"
