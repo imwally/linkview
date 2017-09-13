@@ -1,26 +1,40 @@
 # linkview
 
-_NOTE: This is a work in progess. Some things such as resizing your
-terminal or rendering too many links may cause issues._
-
 Like [urlview](https://github.com/sigpipe/urlview) but tailored for HTML documents.
 
-`linkview` parses an HTML document for any links and displays a menu
-to choose from but instead of displaying only the URL it attempts to
-display the link text.
+That is, unlike `urlview` it only reads valid HTML documents as it
+relies on the [goquery](https://github.com/puerkitobio/goquery)
+package to parse the HTML and find `a` elements. The advantage to this
+is being able to extract the text from a link or in the case of an
+image, the alt or title attributes. This gives more context to what
+the URL points to. Link text will show in the menu instead of just the
+URL.
+
+Here's an example:
 
 ```
-j: move down   k: move up   return: open url   q: quit
+j/C-n: move down   k/C-p: move up   return/C-o: open url   q: quit
 
-  http://pages.news.digitalocean.com/n/R0066U4I7V0030h0EIDvFX0
+https://t.e2ma.net/click/w74ifb/cow3ngb/023tkn
 
-→ Introduction to Object Storage
-  API Documentation
-  GET STARTED
-  tw_blue.png
-  soundcloud.png
-  Refer a Friend
-  NO TEXT
+   Longwood Gardens
+   social-email.png
+   social-twitter.png 
+   social-facebook.png
+   daily
+-> Buy Tickets
+   ftr_01.png
+   1001 Longwood Road, Kennett Square, PA 19348
+   longwoodgardens.org
+   Facebook
+   Twitter
+   Instagram
+   YouTube
+   Blog
+   Manage
+   Opt out
+   Sign up
+   online
 ```
 
 The first section displays help text, the second displays a URL
@@ -28,5 +42,9 @@ preview of the currently selected link, and finally the menu of
 links. Pressing the `return` key will open the currently selected link
 in your default browser.
 
+## But Why?
 
-
+Many HTML emails are built using platforms that modify original
+URLS. This makes it hard to figure out what the URL points to. If you
+notice in the example above, the URL to Buy Tickets is obscured by
+some marketing URL redirect.
