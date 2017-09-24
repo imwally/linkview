@@ -23,6 +23,7 @@ var (
 	KeyCtrlP     = termbox.KeyCtrlP
 	KeyCtrlN     = termbox.KeyCtrlN
 	KeyCtrlO     = termbox.KeyCtrlO
+	KeyCtrlC     = termbox.KeyCtrlC
 )
 
 func PollEvent() {
@@ -79,6 +80,8 @@ func (t *Terminal) HandleEvent(e termbox.Event) (bool, error) {
 				err = t.Select()
 			case KeyCtrlO:
 				err = t.Select()
+			case KeyCtrlC:
+				return true, nil
 			}
 		} else {
 			switch e.Ch {
