@@ -49,4 +49,4 @@ for tracking and analytics purposes. This makes it hard to figure out
 what the URL points to. If you notice in the example above, the URL to
 Buy Tickets is obscured by some marketing URL redirect. With
 `linkview` you have more context to help you figure out the intentions
-of the URL are.
+of the URL.
