@@ -1,6 +1,6 @@
 # linkview
 
-Like [urlview](https://github.com/sigpipe/urlview) but tailored for HTML documents.
+Like [urlview](https://github.com/sigpipe/urlview) but for HTML documents.
 
 That is, unlike `urlview` it only reads valid HTML documents as it
 relies on the [goquery](https://github.com/puerkitobio/goquery)
@@ -44,7 +44,9 @@ in your default browser.
 
 ## But Why?
 
-Many HTML emails are built using platforms that modify original
-URLS. This makes it hard to figure out what the URL points to. If you
-notice in the example above, the URL to Buy Tickets is obscured by
-some marketing URL redirect.
+Many HTML emails are built using marketing platforms that modify URLs
+for tracking and analytics purposes. This makes it hard to figure out
+what the URL points to. If you notice in the example above, the URL to
+Buy Tickets is obscured by some marketing URL redirect. With
+`linkview` you have more context to help you figure out the intentions
+of the URL are.
