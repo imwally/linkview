@@ -4,9 +4,9 @@ Like [urlview](https://github.com/sigpipe/urlview) but for HTML documents.
 
 That is, unlike `urlview` it only reads valid HTML documents as it
 relies on the [goquery](https://github.com/puerkitobio/goquery)
-package to parse the HTML and find `a` elements. The advantage to this
-is being able to extract the text from a link or in the case of an
-image, the alt or title attributes. This gives more context to what
+package to parse the HTML and find anchor elements. The advantage to
+this is being able to extract the text from a link or in the case of
+an image, the alt or title attributes. This gives more context to what
 the URL points to. Link text will show in the menu instead of just the
 URL.
 
