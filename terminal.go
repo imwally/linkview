@@ -14,6 +14,8 @@ type Terminal struct {
 	Width, Height int
 }
 
+const help string = "j/C-n: move down   k/C-p: move up   tab: show URL   return/C-o: open url   q: quit"
+
 var (
 	EventChan    = make(chan termbox.Event)
 	KeyTab       = termbox.KeyTab
@@ -76,6 +78,8 @@ func (t *Terminal) HandleEvent(e termbox.Event) (bool, error) {
 			case KeyCtrlP:
 				t.MoveSelection("up")
 				t.Render()
+			case KeyTab:
+				t.ShowFullLink()
 			case KeyEnter:
 				err = t.Select()
 			case KeyCtrlO:
@@ -106,10 +110,29 @@ func (t *Terminal) Println(x int, y int, s string) {
 	}
 }
 
+func (t *Terminal) ShowFullLink() {
+	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
+
+	t.Println(0, 0, help)
+
+	url := t.Links[t.Selected].URL
+	row := 2
+	col := 0
+	for _, char := range url {
+		if col >= t.Width {
+			row++
+			col = 0
+		}
+		termbox.SetCell(col, row, char, termbox.ColorDefault, termbox.ColorDefault)
+		col++
+	}
+
+	termbox.Flush()
+}
+
 func (t *Terminal) Render() {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
-	help := "j/C-n: move down   k/C-p: move up   return/C-o: open url   q: quit"
 	url := t.Links[t.Selected].URL
 	t.Println(0, 0, help)
 	t.Println(0, 2, url)
