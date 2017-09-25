@@ -10,11 +10,12 @@ import (
 
 type Terminal struct {
 	Links         []Link
+	ViewFullURL   bool
 	Selected      int
 	Width, Height int
 }
 
-const help string = "j/C-n: move down   k/C-p: move up   tab: show URL   return/C-o: open url   q: quit"
+const help string = "j/C-n: move down   k/C-p: move up   tab: toggle full URL   return/C-o: open url   q: quit"
 
 var (
 	EventChan    = make(chan termbox.Event)
@@ -79,7 +80,12 @@ func (t *Terminal) HandleEvent(e termbox.Event) (bool, error) {
 				t.MoveSelection("up")
 				t.Render()
 			case KeyTab:
-				t.ShowFullLink()
+				if !t.ViewFullURL {
+					t.ShowFullLink()
+				} else {
+					t.Render()
+					t.ViewFullURL = false
+				}
 			case KeyEnter:
 				err = t.Select()
 			case KeyCtrlO:
@@ -111,6 +117,7 @@ func (t *Terminal) Println(x int, y int, s string) {
 }
 
 func (t *Terminal) ShowFullLink() {
+	t.ViewFullURL = true
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
 	t.Println(0, 0, help)
