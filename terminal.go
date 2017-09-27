@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os/exec"
 	"runtime"
+	"strings"
 
 	termbox "github.com/nsf/termbox-go"
 )
@@ -11,11 +13,22 @@ import (
 type Terminal struct {
 	Links         []Link
 	ViewFullURL   bool
+	ViewFullHelp  bool
 	Selected      int
 	Width, Height int
 }
 
-const help string = "j/C-n: move down   k/C-p: move up   tab: toggle full URL   return/C-o: open url   q: quit"
+const (
+	mini_help string = "h: help   q: quit"
+	help_full string = `linkview help
+
+h:           toggle help (press again to return to menu)
+tab:         toggle full url
+j/C-n:       move down
+k/C-p:       move up
+return/C-o:  open url
+q/C-c:       quit`
+)
 
 var (
 	EventChan    = make(chan termbox.Event)
@@ -101,6 +114,13 @@ func (t *Terminal) HandleEvent(e termbox.Event) (bool, error) {
 			case 'k':
 				t.MoveSelection("up")
 				t.Render()
+			case 'h':
+				if !t.ViewFullHelp {
+					t.ShowFullHelp()
+				} else {
+					t.Render()
+					t.ViewFullHelp = false
+				}
 			case 'q':
 				return true, nil
 			}
@@ -116,11 +136,25 @@ func (t *Terminal) Println(x int, y int, s string) {
 	}
 }
 
+func (t *Terminal) ShowFullHelp() {
+	t.ViewFullHelp = true
+	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
+
+	scanner := bufio.NewScanner(strings.NewReader(help_full))
+	row := 0
+	for scanner.Scan() {
+		t.Println(0, row, scanner.Text())
+		row++
+	}
+
+	termbox.Flush()
+}
+
 func (t *Terminal) ShowFullLink() {
 	t.ViewFullURL = true
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
-	t.Println(0, 0, help)
+	t.Println(0, 0, mini_help)
 
 	url := t.Links[t.Selected].URL
 	row := 2
@@ -141,7 +175,7 @@ func (t *Terminal) Render() {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
 	url := t.Links[t.Selected].URL
-	t.Println(0, 0, help)
+	t.Println(0, 0, mini_help)
 	t.Println(0, 2, url)
 
 	var start int
