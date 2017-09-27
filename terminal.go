@@ -19,7 +19,7 @@ type Terminal struct {
 }
 
 const (
-	mini_help string = "h: help   q: quit"
+	help_mini string = "h: help   q: quit"
 	help_full string = `linkview help
 
 h:           toggle help (press again to return to menu)
@@ -154,7 +154,7 @@ func (t *Terminal) ShowFullLink() {
 	t.ViewFullURL = true
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
-	t.Println(0, 0, mini_help)
+	t.Println(0, 0, help_mini)
 
 	url := t.Links[t.Selected].URL
 	row := 2
@@ -175,7 +175,7 @@ func (t *Terminal) Render() {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
 	url := t.Links[t.Selected].URL
-	t.Println(0, 0, mini_help)
+	t.Println(0, 0, help_mini)
 	t.Println(0, 2, url)
 
 	var start int
