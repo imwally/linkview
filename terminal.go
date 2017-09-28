@@ -20,7 +20,7 @@ type Terminal struct {
 
 const (
 	help_mini string = "h: help   q: quit"
-	help_full string = `linkview help
+	help_full string = `
 
 h:           toggle help (press again to return to menu)
 tab:         toggle full url
@@ -140,6 +140,7 @@ func (t *Terminal) ShowFullHelp() {
 	t.ViewFullHelp = true
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
+	t.Println(0, 0, help_mini)
 	scanner := bufio.NewScanner(strings.NewReader(help_full))
 	row := 0
 	for scanner.Scan() {
