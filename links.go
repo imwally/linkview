@@ -33,11 +33,7 @@ func ImageText(s *goquery.Selection) string {
 	}
 
 	src, ok := s.Attr("src")
-	if !ok {
-		return "NO TEXT"
-	}
-
-	if src == "" {
+	if !ok || src == "" {
 		return "NO TEXT"
 	}
 
