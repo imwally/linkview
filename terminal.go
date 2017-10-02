@@ -24,6 +24,8 @@ const (
 
 h:           toggle help (press again to return to menu)
 tab:         toggle full url
+g:           go to top
+G:           go to bottom
 j/C-n:       move down
 k/C-p:       move up
 return/C-o:  open url
@@ -108,6 +110,12 @@ func (t *Terminal) HandleEvent(e termbox.Event) (bool, error) {
 			}
 		} else {
 			switch e.Ch {
+			case 'G':
+				t.GoToBottom()
+				t.Render()
+			case 'g':
+				t.GoToTop()
+				t.Render()
 			case 'j':
 				t.MoveSelection("down")
 				t.Render()
@@ -175,6 +183,14 @@ func (t *Terminal) ShowFullLink() {
 	}
 
 	termbox.Flush()
+}
+
+func (t *Terminal) GoToTop() {
+	t.Selected = 0
+}
+
+func (t *Terminal) GoToBottom() {
+	t.Selected = len(t.Links) - 1
 }
 
 func (t *Terminal) Render() {
