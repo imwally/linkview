@@ -137,10 +137,8 @@ func (t *Terminal) Println(x int, y int, s string) {
 }
 
 func (t *Terminal) PrintHeader() {
-	selected := t.Selected
-	numLinks := len(t.Links)
 	t.Println(0, 0, help_mini)
-	t.Println(len(help_mini)+3, 0, fmt.Sprintf("(%d of %d)", selected+1, numLinks))
+	t.Println(len(help_mini)+3, 0, fmt.Sprintf("(%d of %d)", t.Selected+1, len(t.Links)))
 }
 
 func (t *Terminal) ShowFullHelp() {
