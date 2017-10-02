@@ -136,6 +136,13 @@ func (t *Terminal) Println(x int, y int, s string) {
 	}
 }
 
+func (t *Terminal) PrintHeader() {
+	selected := t.Selected
+	numLinks := len(t.Links)
+	t.Println(0, 0, help_mini)
+	t.Println(len(help_mini)+3, 0, fmt.Sprintf("(%d of %d)", selected+1, numLinks))
+}
+
 func (t *Terminal) ShowFullHelp() {
 	t.ViewFullHelp = true
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
@@ -155,7 +162,7 @@ func (t *Terminal) ShowFullLink() {
 	t.ViewFullURL = true
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
-	t.Println(0, 0, help_mini)
+	t.PrintHeader()
 
 	url := t.Links[t.Selected].URL
 	row := 2
@@ -175,8 +182,9 @@ func (t *Terminal) ShowFullLink() {
 func (t *Terminal) Render() {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
+	t.PrintHeader()
+
 	url := t.Links[t.Selected].URL
-	t.Println(0, 0, help_mini)
 	t.Println(0, 2, url)
 
 	var start int
@@ -185,14 +193,13 @@ func (t *Terminal) Render() {
 		start = offset
 	}
 
-	links := t.Links
-	for i := start; i < len(links); i++ {
+	for i := start; i < len(t.Links); i++ {
 		if t.Selected > t.Height-6 {
 			t.Println(0, t.Height-2, "->")
-			t.Println(3, i+4-offset, links[i].Text)
+			t.Println(3, i+4-offset, t.Links[i].Text)
 		} else {
 			t.Println(0, t.Selected+4, "->")
-			t.Println(3, i+4, links[i].Text)
+			t.Println(3, i+4, t.Links[i].Text)
 		}
 	}
 
