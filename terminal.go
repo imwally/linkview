@@ -19,6 +19,9 @@ type Terminal struct {
 }
 
 const (
+	UP = iota
+	DOWN
+
 	help_mini string = "h: help   q: quit"
 	help_full string = `
 
@@ -83,16 +86,16 @@ func (t *Terminal) HandleEvent(e termbox.Event) (bool, error) {
 		if e.Ch == 0 {
 			switch e.Key {
 			case KeyArrowDown:
-				t.MoveSelection("down")
+				t.MoveSelection(DOWN)
 				t.Render()
 			case KeyCtrlN:
-				t.MoveSelection("down")
+				t.MoveSelection(DOWN)
 				t.Render()
 			case KeyArrowUp:
-				t.MoveSelection("up")
+				t.MoveSelection(UP)
 				t.Render()
 			case KeyCtrlP:
-				t.MoveSelection("up")
+				t.MoveSelection(UP)
 				t.Render()
 			case KeyTab:
 				if !t.ViewFullURL {
@@ -117,10 +120,10 @@ func (t *Terminal) HandleEvent(e termbox.Event) (bool, error) {
 				t.GoToTop()
 				t.Render()
 			case 'j':
-				t.MoveSelection("down")
+				t.MoveSelection(DOWN)
 				t.Render()
 			case 'k':
-				t.MoveSelection("up")
+				t.MoveSelection(UP)
 				t.Render()
 			case 'h':
 				if !t.ViewFullHelp {
@@ -185,14 +188,6 @@ func (t *Terminal) ShowFullLink() {
 	termbox.Flush()
 }
 
-func (t *Terminal) GoToTop() {
-	t.Selected = 0
-}
-
-func (t *Terminal) GoToBottom() {
-	t.Selected = len(t.Links) - 1
-}
-
 func (t *Terminal) Render() {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
@@ -224,11 +219,11 @@ func (t *Terminal) SetSize() {
 	t.Width, t.Height = termbox.Size()
 }
 
-func (t *Terminal) MoveSelection(direction string) {
+func (t *Terminal) MoveSelection(direction int) {
 	switch direction {
-	case "up":
+	case 0:
 		t.Selected--
-	case "down":
+	case 1:
 		t.Selected++
 	}
 
@@ -239,6 +234,14 @@ func (t *Terminal) MoveSelection(direction string) {
 	if t.Selected < 0 {
 		t.Selected = 0
 	}
+}
+
+func (t *Terminal) GoToTop() {
+	t.Selected = 0
+}
+
+func (t *Terminal) GoToBottom() {
+	t.Selected = len(t.Links) - 1
 }
 
 func (t *Terminal) Select() error {
