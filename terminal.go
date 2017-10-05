@@ -21,9 +21,11 @@ type Terminal struct {
 const (
 	UP = iota
 	DOWN
+)
 
-	help_mini string = "h: help   q: quit"
-	help_full string = `
+const (
+	HelpMini string = "h: help   q: quit"
+	HelpFull string = `
 
 h:           toggle help (press again to return to menu)
 tab:         toggle full url
@@ -148,16 +150,16 @@ func (t *Terminal) Println(x int, y int, s string) {
 }
 
 func (t *Terminal) PrintHeader() {
-	t.Println(0, 0, help_mini)
-	t.Println(len(help_mini)+3, 0, fmt.Sprintf("(%d of %d)", t.Selected+1, len(t.Links)))
+	t.Println(0, 0, HelpMini)
+	t.Println(len(HelpMini)+3, 0, fmt.Sprintf("(%d of %d)", t.Selected+1, len(t.Links)))
 }
 
 func (t *Terminal) ShowFullHelp() {
 	t.ViewFullHelp = true
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
-	t.Println(0, 0, help_mini)
-	scanner := bufio.NewScanner(strings.NewReader(help_full))
+	t.Println(0, 0, HelpMini)
+	scanner := bufio.NewScanner(strings.NewReader(HelpFull))
 	row := 0
 	for scanner.Scan() {
 		t.Println(0, row, scanner.Text())
