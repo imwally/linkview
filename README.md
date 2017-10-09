@@ -53,6 +53,12 @@ links. Pressing the `return` key will open the currently selected link
 in your default browser. Pressing the `tab` key will hide the menu and
 display the full URL.
 
+## How To Install
+
+```
+$ go get -u github.com/imwally/linkview
+```
+
 ## How To Use
 
 ```
