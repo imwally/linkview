@@ -27,14 +27,14 @@ const (
 	HelpMini string = "h: help   q: quit"
 	HelpFull string = `
 
-h:           toggle help (press again to return to menu)
-tab:         toggle full url
-g:           go to top
-G:           go to bottom
-j/C-n:       move down
-k/C-p:       move up
-return/C-o:  open url
-q/C-c:       quit`
+h:               toggle help (press again to return to menu)
+tab:             toggle full url
+g:               go to top
+G:               go to bottom
+k / C-p / up:    move up
+j / C-n / down:  move down
+return / C-o:    open url
+q / C-c:         quit`
 )
 
 var (
@@ -55,10 +55,12 @@ func PollEvent() {
 
 func NewTerminal(links *[]Link) *Terminal {
 	term := Terminal{
-		Links:    *links,
-		Selected: 0,
-		Width:    0,
-		Height:   0,
+		Links:        *links,
+		ViewFullURL:  false,
+		ViewFullHelp: false,
+		Selected:     0,
+		Width:        0,
+		Height:       0,
 	}
 
 	return &term
