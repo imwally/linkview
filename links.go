@@ -1,14 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/url"
 	"path"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"mvdan.cc/xurls"
 )
 
 type Link struct {
@@ -45,7 +48,7 @@ func ImageText(s *goquery.Selection) string {
 	return path.Base(imageURL.Path)
 }
 
-func FindLinks(file io.Reader) ([]Link, error) {
+func FindLinksHTML(file io.Reader) ([]Link, error) {
 	doc, err := goquery.NewDocumentFromReader(file)
 	if err != nil {
 		return nil, err
@@ -81,4 +84,35 @@ func FindLinks(file io.Reader) ([]Link, error) {
 	}
 
 	return links, nil
+}
+
+func FindLinksRegEx(file []byte) ([]Link, error) {
+	var links []Link
+	RegexLinks := xurls.Strict().FindAllString(string(file), -1)
+	for _, link := range RegexLinks {
+		links = append(links, Link{"", link, link})
+	}
+
+	if len(links) == 0 {
+		return nil, errors.New("no links found")
+	}
+
+	return links, nil
+}
+
+func FindLinks(file io.Reader) ([]Link, error) {
+	var buf bytes.Buffer
+	tee := io.TeeReader(file, &buf)
+
+	links, err := FindLinksHTML(tee)
+	if err != nil {
+		b, err := ioutil.ReadAll(&buf)
+		if err != nil {
+			return nil, err
+		}
+
+		return FindLinksRegEx(b)
+	}
+
+	return links, err
 }
