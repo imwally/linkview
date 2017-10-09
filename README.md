@@ -10,6 +10,7 @@ text will show in the menu instead of just the URL if given an HTML
 document.
 
 ## Example
+
 ```
 h: help   q: quit   (6 of 29)
 
@@ -51,6 +52,18 @@ preview of the currently selected link, and finally the menu of
 links. Pressing the `return` key will open the currently selected link
 in your default browser. Pressing the `tab` key will hide the menu and
 display the full URL.
+
+## How To Use
+
+```
+$ linkview /path/to/filename
+```
+
+Or pipe to.
+
+```
+$ cat /path/to/filename | linkview
+```
 
 ## Help
 
