@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"errors"
+	"html"
 	"io"
 	"io/ioutil"
 	"log"
@@ -21,7 +22,8 @@ type Link struct {
 }
 
 func NormalizeString(s string) string {
-	return strings.Join(strings.Fields(s), " ")
+	unescaped := html.UnescapeString(s)
+	return strings.Join(strings.Fields(unescaped), " ")
 }
 
 func ImageText(s *goquery.Selection) string {
@@ -62,7 +64,7 @@ func FindLinksHTML(file io.Reader) ([]Link, error) {
 		}
 
 		node := goquery.NodeName(s)
-		text := NormalizeString(s.Text())
+		text := s.Text()
 
 		s.Children().Each(func(i int, s *goquery.Selection) {
 			node = goquery.NodeName(s)
@@ -72,6 +74,7 @@ func FindLinksHTML(file io.Reader) ([]Link, error) {
 			}
 		})
 
+		text = NormalizeString(text)
 		if text == "" {
 			text = "NO TEXT"
 		}
