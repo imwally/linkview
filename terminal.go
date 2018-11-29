@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"unicode/utf8"
 
 	termbox "github.com/nsf/termbox-go"
 )
@@ -146,8 +147,13 @@ func (t *Terminal) HandleEvent(e termbox.Event) (bool, error) {
 }
 
 func (t *Terminal) Println(x int, y int, s string) {
-	for col, char := range s {
-		termbox.SetCell(col+x, y, char, termbox.ColorDefault, termbox.ColorDefault)
+	b := []byte(s)
+	i := 0
+	for len(b) > 0 {
+		r, size := utf8.DecodeRune(b)
+		termbox.SetCell(x+i, y, r, termbox.ColorDefault, termbox.ColorDefault)
+		b = b[size:]
+		i++
 	}
 }
 
