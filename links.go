@@ -6,6 +6,9 @@ import (
 	"html"
 	"io"
 	"io/ioutil"
+	"log"
+	"net/url"
+	"path"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -34,7 +37,17 @@ func ImageText(s *goquery.Selection) string {
 		return title
 	}
 
-	return ""
+	src, ok := s.Attr("src")
+	if !ok || src == "" {
+		return ""
+	}
+
+	imageURL, err := url.Parse(src)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return path.Base(imageURL.Path)
 }
 
 func FindLinksHTML(file io.Reader) ([]Link, error) {
