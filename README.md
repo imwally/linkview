@@ -71,6 +71,15 @@ Or pipe to.
 $ cat /path/to/filename | linkview
 ```
 
+## With mutt
+
+View links with Ctrl-b with the following configuration:
+
+```
+set pipe_decode = yes 
+macro index,pager \cb <pipe-entry>'linkview'<enter> 'Follow links with linkview'
+```
+
 ## Help
 
 ```
