@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"mvdan.cc/xurls"
+	"mvdan.cc/xurls/v2"
 )
 
 type Link struct {
@@ -91,8 +91,9 @@ func FindLinksHTML(file io.Reader) ([]Link, error) {
 
 func FindLinksRegEx(file []byte) ([]Link, error) {
 	var links []Link
-	RegexLinks := xurls.Strict().FindAllString(string(file), -1)
-	for _, link := range RegexLinks {
+	rxStrict := xurls.Strict()
+	regexLinks := rxStrict.FindAllString(string(file), -1)
+	for _, link := range regexLinks {
 		links = append(links, Link{"", link, link})
 	}
 
